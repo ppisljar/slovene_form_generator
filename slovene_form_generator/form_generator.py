@@ -1,6 +1,7 @@
 import pickle
 from collections import defaultdict as dd
 import json
+import os
 
 class VectorizeLemma:
 
@@ -23,12 +24,12 @@ class VectorizeLemma:
                         'punctuation': 'U'}
 
         # LOAD LISTS OF ENDING PARTS
-        self.ending_parts_for_verbs = [line.strip("\n") for line in open("./resources/ending_parts_for_verbs.tsv", "r", encoding="UTF-8").readlines()]
-        self.ending_parts_for_masculine_nouns = [line.strip("\n") for line in open("./resources/ending_parts_for_masculine_nouns.tsv", "r", encoding="UTF-8").readlines()]
-        self.ending_parts_for_feminine_nouns = [line.strip("\n") for line in open("./resources/ending_parts_for_feminine_nouns.tsv", "r", encoding="UTF-8").readlines()]
-        self.ending_parts_for_neuter_nouns = [line.strip("\n") for line in open("./resources/ending_parts_for_neuter_nouns.tsv", "r", encoding="UTF-8").readlines()]
-        self.ending_parts_for_adjectives = [line.strip("\n") for line in open("./resources/ending_parts_for_adjectives.tsv", "r", encoding="UTF-8").readlines()]
-        self.ending_parts_for_adverbs = [line.strip("\n") for line in open("./resources/ending_parts_for_adverbs.tsv", "r", encoding="UTF-8").readlines()]
+        self.ending_parts_for_verbs = [line.strip("\n") for line in open(os.path.join(os.path.dirname(__file__),"resources/ending_parts_for_verbs.tsv"), "r", encoding="UTF-8").readlines()]
+        self.ending_parts_for_masculine_nouns = [line.strip("\n") for line in open(os.path.join(os.path.dirname(__file__),"resources/ending_parts_for_masculine_nouns.tsv"), "r", encoding="UTF-8").readlines()]
+        self.ending_parts_for_feminine_nouns = [line.strip("\n") for line in open(os.path.join(os.path.dirname(__file__),"resources/ending_parts_for_feminine_nouns.tsv"), "r", encoding="UTF-8").readlines()]
+        self.ending_parts_for_neuter_nouns = [line.strip("\n") for line in open(os.path.join(os.path.dirname(__file__),"resources/ending_parts_for_neuter_nouns.tsv"), "r", encoding="UTF-8").readlines()]
+        self.ending_parts_for_adjectives = [line.strip("\n") for line in open(os.path.join(os.path.dirname(__file__),"resources/ending_parts_for_adjectives.tsv"), "r", encoding="UTF-8").readlines()]
+        self.ending_parts_for_adverbs = [line.strip("\n") for line in open(os.path.join(os.path.dirname(__file__),"resources/ending_parts_for_adverbs.tsv"), "r", encoding="UTF-8").readlines()]
 
     # ADDITIONAL FEATURE EXTRACTORS
     def lemma_endswith_cczsj(self, lemma):
@@ -192,12 +193,12 @@ class PatternPredictor:
         self.lemma_vectorizer = VectorizeLemma()
 
         # LOAD PREDICTION MODELS
-        self.logreg_verbs = pickle.load(open("./models/logreg_verbs.sav", "rb"))
-        self.logreg_adverbs = pickle.load(open("./models/logreg_adverbs.sav", "rb"))
-        self.logreg_adjectives = pickle.load(open("./models/logreg_adjectives.sav", "rb"))
-        self.logreg_masculine_nouns = pickle.load(open("./models/logreg_masculine-nouns.sav", "rb"))
-        self.logreg_feminine_nouns = pickle.load(open("./models/logreg_feminine-nouns.sav", "rb"))
-        self.logreg_neuter_nouns = pickle.load(open("./models/logreg_neuter-nouns.sav", "rb"))
+        self.logreg_verbs = pickle.load(open(os.path.join(os.path.dirname(__file__),"models/logreg_verbs.sav"), "rb"))
+        self.logreg_adverbs = pickle.load(open(os.path.join(os.path.dirname(__file__),"models/logreg_adverbs.sav"), "rb"))
+        self.logreg_adjectives = pickle.load(open(os.path.join(os.path.dirname(__file__),"models/logreg_adjectives.sav"), "rb"))
+        self.logreg_masculine_nouns = pickle.load(open(os.path.join(os.path.dirname(__file__),"models/logreg_masculine-nouns.sav"), "rb"))
+        self.logreg_feminine_nouns = pickle.load(open(os.path.join(os.path.dirname(__file__),"models/logreg_feminine-nouns.sav"), "rb"))
+        self.logreg_neuter_nouns = pickle.load(open(os.path.join(os.path.dirname(__file__),"models/logreg_neuter-nouns.sav"), "rb"))
 
         # DICTIONARY OF FINEGRAINED POS FOR PATTERN KEY FEATURE
         self.dict_msd = {'verbs': 'G',
@@ -364,14 +365,14 @@ class FormGenerator:
 
         # POPULATE DICTIONARY WITH MORPHOLOGICAL PATTERNS
         self.dict_morphological_patterns = dd()
-        self.file_with_patterns_for_form_generation = open("./resources/patterns_for_generation.tsv", "r", encoding="UTF-8").readlines()
+        self.file_with_patterns_for_form_generation = open(os.path.join(os.path.dirname(__file__), "resources/patterns_for_generation.tsv"), "r", encoding="UTF-8").readlines()
         for line in self.file_with_patterns_for_form_generation:
             self.pattern_code, self.pattern = line.strip("\n").split("\t")[0:2]
             self.dict_morphological_patterns[self.pattern_code] = self.pattern
 
         # LIST OF FUNDAMENTAL MSDS USED FOR LEMMA FORMS
         # CAUTION - DO **NOT** CHANGE THE ORDER OF MSDs IN THE FILE UNDER ANY CIRCUMSTANCES.
-        self.list_of_msds_for_lemmas = [line.strip("\n") for line in open("./resources/list_of_msds_for_lemmas.tsv", "r", encoding="UTF-8").readlines()]
+        self.list_of_msds_for_lemmas = [line.strip("\n") for line in open(os.path.join(os.path.dirname(__file__), "resources/list_of_msds_for_lemmas.tsv"), "r", encoding="UTF-8").readlines()]
 
 
 
@@ -425,7 +426,7 @@ class PatternCodeRemapper:
         This pattern remapping dictionary converts the simplified pattern codes into their actual codes.
         """
         self.dict_pattern_remapping = dd()
-        for line in open("./resources/pattern_remapping.tsv", "r", encoding="UTF-8").readlines()[1:]:  # SKIP HEADER
+        for line in open(os.path.join(os.path.dirname(__file__), "resources/pattern_remapping.tsv"), "r", encoding="UTF-8").readlines()[1:]:  # SKIP HEADER
             predicted_pattern, actual_remapped_pattern = line.strip("\n").split("\t")
             self.dict_pattern_remapping[predicted_pattern] = actual_remapped_pattern
 
@@ -433,3 +434,38 @@ class PatternCodeRemapper:
         """FUNCTION - REMAP SIMPLIFIED PATTERN CODES TO ACTUAL PATTERN CODES"""
         return self.dict_pattern_remapping[
             pattern_code] if pattern_code in self.dict_pattern_remapping else pattern_code
+
+class SloveneFormGenerator:
+    def __init__(self):
+                
+        self.pattern_predictor = PatternPredictor()
+        self.form_generator = FormGenerator()
+        self.pattern_code_remapper = PatternCodeRemapper()
+
+    def generate(self, lema_in, msd, pattern_code = None):
+
+        # Get pattern code from input word or calculate it if it is not given
+        if pattern_code is None:
+            pattern_code = self.pattern_predictor.predict_morphological_pattern(lemma=lema_in, msd=msd)
+
+        # Generate forms based on pattern code
+        pattern_dictionary = self.form_generator.generate_forms(pattern_code=pattern_code, lemma=lema_in)
+        remapped_pattern_code = self.pattern_code_remapper.remap_pattern_code(pattern_code=pattern_code)
+
+        # Create response
+        response = []
+        for msd, form_list in pattern_dictionary.items():
+            forms = []
+            for form in form_list:
+                orthographies = []
+                orthographies.append({ "text": form, "morphologyPatterns": remapped_pattern_code })
+                # Add more orthographies here if required
+
+                # Add orthographies to current form
+                forms.append({ 'orthographies': orthographies })
+
+            # Add current form to msd entry
+            response.append({'msd': msd, 'forms': forms})
+
+        # Return whole response
+        return response
