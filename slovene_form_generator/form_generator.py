@@ -382,7 +382,8 @@ class FormGenerator:
         if pattern_code in self.dict_morphological_patterns:
             self.pattern = self.dict_morphological_patterns[pattern_code]
         else:
-            return None
+            print(f"invalid MPC: {pattern_code}")
+            return {}
 
         # POPULATE PATTERN DICTIONARY
         self.pattern_dictionary = dd(list)
