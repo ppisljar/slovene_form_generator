@@ -14,6 +14,10 @@ class Mte6Translate:
 
         file_with_msd_translations = open(os.path.join(os.path.dirname(__file__), "resources/mte_6_dict_sl_en.tsv"), "r", encoding="UTF-8").readlines()
 
+        # LIST OF FUNDAMENTAL MSDS USED FOR LEMMA FORMS
+        # CAUTION - DO **NOT** CHANGE THE ORDER OF MSDs IN THE FILE UNDER ANY CIRCUMSTANCES.
+        self.list_of_msds_for_lemmas = [line.strip("\n") for line in open(os.path.join(os.path.dirname(__file__), "resources/list_of_msds_for_lemmas.tsv"), "r", encoding="UTF-8").readlines()]
+
         for line in file_with_msd_translations[1:]:  # SKIP HEADERS
             msd_en,\
             features_en,\
@@ -51,6 +55,10 @@ class Mte6Translate:
 
     def get_sl_features(self, msd_sl):
         msd_sl = self.msd_en_to_sl(msd_sl)
+        if msd_sl not in self.mte6_dict_sl_features:
+            print(f'uknown msd: {msd_sl}')
+            return None, {}
+        
         parts = self.mte6_dict_sl_features[msd_sl].split(' ')
         type = parts.pop(0)
         features = { }
@@ -64,6 +72,10 @@ class Mte6Translate:
     
     def get_en_features(self, msd_en):
         msd_en = self.msd_sl_to_en(msd_en)
+        if msd_en not in self.mte6_dict_en_features:
+            print(f'uknown msd: {msd_en}')
+            return None, {}
+        
         parts = self.mte6_dict_en_features[msd_en].split(' ')
         type = parts.pop(0)
         features = { }
@@ -75,3 +87,13 @@ class Mte6Translate:
 
         return type, features
 
+    def get_lemma_msd(self, msd_sl):
+        msd_sl = self.msd_en_to_sl(msd_sl)
+
+        lemma_msd = ""
+        for item in self.list_of_msds_for_lemmas:
+            if item in msd_sl:
+                lemma_msd = item
+                break
+
+        return lemma_msd

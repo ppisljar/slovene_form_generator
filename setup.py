@@ -11,7 +11,7 @@ with open("README.md", "r", encoding="utf-8") as readme_file:
 
 setup(
     name='slovene_form_generator',
-    version='0.0.14',
+    version='0.0.17',
     author = "Peter Pisljar",
     description = "slovene word inflector / form generator",
     long_description=README,
